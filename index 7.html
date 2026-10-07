@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Chantiers">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Compta Chantiers</title>
+<style>
+:root{--bg:#ebe9e3;--card:#fbfaf7;--ink:#1c2830;--mute:#66727a;--line:#d5d2c8;--acc:#f0b400;--accink:#1c1500;--pos:#2b7a4b;--neg:#b3372d;--shade:rgba(20,25,28,.45);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141819;--card:#1e2427;--ink:#eceff1;--mute:#98a4ab;--line:#334046;--pos:#58c283;--neg:#ee7d72;--shade:rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#141819;--card:#1e2427;--ink:#eceff1;--mute:#98a4ab;--line:#334046;--pos:#58c283;--neg:#ee7d72;--shade:rgba(0,0,0,.6)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Avenir Next","Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+header{padding:14px 16px 6px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+h1{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+h2{margin:22px 0 8px;font-size:15px;font-weight:700;color:var(--mute)}
+main{padding:0 14px 120px;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.hero{border-left:6px solid var(--acc)}
+.hero .big{font-size:38px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.mute{color:var(--mute)}.sm{font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-top:12px}
+.grid b{display:block;font-size:17px;font-variant-numeric:tabular-nums}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row b{font-variant-numeric:tabular-nums}
+.item{display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
+.tab{flex:1;background:none;border:0;font:inherit;font-size:13px;font-weight:600;color:var(--mute);padding:10px 2px;border-radius:8px;cursor:pointer}
+.tab.on{color:var(--accink);background:var(--acc)}
+label{display:block;font-size:13px;font-weight:600;color:var(--mute);margin:12px 0 4px}
+input,select,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;min-height:44px}
+textarea{min-height:110px;font:12px/1.3 ui-monospace,Menlo,monospace}
+button.b{font:inherit;font-weight:700;border:0;border-radius:10px;padding:12px 16px;min-height:44px;background:var(--ink);color:var(--bg);cursor:pointer}
+button.b.acc{background:var(--acc);color:var(--accink)}
+button.b.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.b.danger{background:transparent;color:var(--neg);border:1px solid var(--neg)}
+button.b:disabled{opacity:.4}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.btns .b{flex:1;white-space:nowrap}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--pos)}
+.warn{background:var(--acc);color:var(--accink);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:14px;font-weight:600}
+#sheet{position:fixed;inset:0;background:var(--shade);z-index:10;display:flex;align-items:flex-end}
+#sheet[hidden]{display:none}
+.panel{background:var(--bg);width:100%;max-height:94%;overflow:auto;border-radius:16px 16px 0 0;padding:16px 14px calc(20px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto}
+.exp{display:grid;grid-template-columns:1fr 100px 44px;gap:6px;margin-bottom:6px}
+.exp button{padding:0}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:20px;font-size:14px;font-weight:600;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+.seg{display:flex;background:var(--line);border-radius:10px;padding:3px;margin:6px 0 14px}
+.seg button{flex:1;border:0;background:none;font:inherit;font-weight:700;padding:10px;border-radius:8px;color:var(--mute);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink)}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border:0;border-bottom:1px solid var(--line);width:100%;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;font-variant-numeric:tabular-nums}
+.mrow:last-child{border-bottom:0}
+div.mrow{cursor:default;padding:8px 0}
+.expc{border:1px solid var(--line);border-radius:10px;padding:8px;margin-bottom:8px;background:var(--card)}
+.exp1{display:grid;grid-template-columns:1fr 44px;gap:6px;margin-bottom:6px}.exp1 button{padding:0}
+.exp2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pill{font-size:11px;font-weight:700;background:var(--acc);color:var(--accink);border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:middle}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 12px;min-height:36px;cursor:pointer}
+.empty{text-align:center;padding:30px 10px;color:var(--mute)}
+</style>
+</head>
+<body>
+<header><h1>Compta chantiers</h1><span id="yr"></span></header>
+<main id="app"></main>
+<div id="sheet" hidden></div>
+<div id="toast"></div>
+<nav class="tabs">
+<button class="tab" data-tab="bilan">Bilan</button>
+<button class="tab" data-tab="jobs">Chantiers</button>
+<button class="tab" data-tab="clients">Clients</button>
+<button class="tab" data-tab="set">Réglages</button>
+</nav>
+<script>
+const KEY='compta_chantiers_v1';
+let S={rate:0,clients:[],jobs:[],presets:[],lastBackup:null};
+let q='',filt='all',mode='year',month=new Date().getMonth(),tab='bilan',year=new Date().getFullYear(),editing=null,armed=null,bkText='',rsText='';
+const fmt=new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'});
+const eur=n=>fmt.format(n||0);
+const num=v=>{const n=parseFloat(String(v==null?'':v).replace(/\s/g,'').replace(',','.'));return isNaN(n)?0:n};
+const pct=m=>m==null?'—':m.toFixed(1).replace('.',',')+' %';
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>new Date().toISOString().slice(0,10);
+const sgn=n=>n<0?'neg':'pos';
+const hh=h=>String(Math.round(h*100)/100).replace('.',',')+' h';
+const MOIS=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const jobMonth=j=>+(j.date||'').slice(5,7)-1;
+const MABR=['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc'];
+const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+
+const SNAPK=KEY+'_snaps';
+function migrate(d){d=d||{};return{v:2,rate:num(d.rate),clients:Array.isArray(d.clients)?d.clients:[],jobs:(Array.isArray(d.jobs)?d.jobs:[]).map(j=>Object.assign({},j,{expenses:Array.isArray(j.expenses)?j.expenses:[]})),presets:Array.isArray(d.presets)?d.presets:[],lastBackup:d.lastBackup||null,updated:d.updated||0}}
+function load(){try{const r=localStorage.getItem(KEY);if(r)S=migrate(JSON.parse(r))}catch(e){}}
+function idb(mode,fn){return new Promise(res=>{try{const q=indexedDB.open('compta_chantiers',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onerror=()=>res(null);q.onsuccess=()=>{try{const tx=q.result.transaction('kv',mode),r=fn(tx.objectStore('kv'));tx.oncomplete=()=>res(r&&r.result!==undefined?r.result:null);tx.onerror=()=>res(null)}catch(e){res(null)}}}catch(e){res(null)}})}
+function save(){S.updated=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Enregistrement impossible')}idb('readwrite',st=>st.put(JSON.stringify(S),'data'))}
+function snaps(){try{return JSON.parse(localStorage.getItem(SNAPK))||[]}catch(e){return[]}}
+function daySnap(){if(!S.jobs.length&&!S.clients.length)return;const l=snaps();if(l[0]&&l[0].d===today())return;l.unshift({d:today(),t:Date.now(),data:JSON.stringify(S)});try{localStorage.setItem(SNAPK,JSON.stringify(l.slice(0,8)))}catch(e){}}
+async function recover(){try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+const raw=await idb('readonly',st=>st.get('data'));
+if(raw){try{const m=migrate(JSON.parse(raw));if(m.updated>S.updated&&(m.jobs.length||m.clients.length)){S=m;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}render();toast('Données récupérées')}}catch(e){}}
+else if(S.jobs.length||S.clients.length)idb('readwrite',st=>st.put(JSON.stringify(S),'data'));
+daySnap()}
+function makeBackup(){S.lastBackup=new Date().toISOString();save();return JSON.stringify({app:'compta-chantiers',version:2,data:S})}
+async function saveFile(){const prev=S.lastBackup,txt=makeBackup(),name='compta-chantiers-'+today()+'.json';
+try{const f=new File([txt],name,{type:'application/json'});
+if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});render();toast('Sauvegarde envoyée');return}}
+catch(e){if(e&&e.name==='AbortError'){S.lastBackup=prev;save();render();return}}
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();render();toast('Fichier téléchargé')}
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
+
+function calc(j){const ca=num(j.ca),labor=num(j.hours)*num(j.rate),exp=(j.expenses||[]).reduce((a,e)=>a+num(e.amount),0),billed=(j.expenses||[]).reduce((a,e)=>a+num(e.billed),0),cost=exp,profit=ca+billed-exp+labor,base=ca+billed+labor;return{ca,billed,labor,exp,cost,profit,margin:base>0?profit/base*100:null}}
+function sum(list){const t={ca:0,billed:0,labor:0,exp:0,cost:0,profit:0,hours:0};list.forEach(j=>{const c=calc(j);t.ca+=c.ca;t.billed+=c.billed;t.labor+=c.labor;t.exp+=c.exp;t.cost+=c.cost;t.profit+=c.profit;t.hours+=num(j.hours)});t.margin=(t.ca+t.billed+t.labor)>0?t.profit/(t.ca+t.billed+t.labor)*100:null;return t}
+const yearJobs=()=>S.jobs.filter(j=>(j.date||'').slice(0,4)==year);
+const cname=id=>{const c=S.clients.find(c=>c.id===id);return c?c.name:'Client supprimé'};
+
+function yearSel(){const ys=new Set([new Date().getFullYear(),year]);S.jobs.forEach(j=>{const y=+(j.date||'').slice(0,4);if(y)ys.add(y)});
+return `<select data-year style="width:auto;min-height:36px;padding:4px 10px">${[...ys].sort((a,b)=>b-a).map(y=>`<option ${y==year?'selected':''}>${y}</option>`).join('')}</select>`}
+
+function backupWarn(){if(!S.jobs.length)return'';
+if(!S.lastBackup)return'<div class="warn">Aucune sauvegarde faite. Allez dans Réglages pour en créer une.</div>';
+const d=(Date.now()-new Date(S.lastBackup))/864e5;
+return d>30?`<div class="warn">Dernière sauvegarde il y a ${Math.floor(d)} jours. Pensez à en refaire une.</div>`:''}
+
+function hero(t,n){return `<div class="card hero"><div class="mute sm">Bénéfice (main-d'œuvre incluse)</div>
+<div class="big ${sgn(t.profit)}">${eur(t.profit)}</div>
+<div class="sm">Marge <b>${pct(t.margin)}</b> · ${n} chantier${n>1?'s':''}</div>
+<div class="sm" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)">
+<div class="row"><span>dont main-d'œuvre (${hh(t.hours)})</span><b>${eur(t.labor)}</b></div></div>
+<div class="grid"><div><span class="mute sm">Chiffre d'affaires</span><b>${eur(t.ca)}</b></div>
+<div><span class="mute sm">Dépenses (coût réel)</span><b>${eur(t.exp)}</b></div>${t.billed?`<div><span class="mute sm">Dépenses refacturées</span><b>${eur(t.billed)}</b></div>`:''}</div></div>`}
+function monthTable(all){const rows=MOIS.map((m,i)=>{const l=all.filter(j=>jobMonth(j)===i);return{m,i,n:l.length,t:sum(l)}});
+return `<h2>Mois par mois</h2><div class="card" style="padding:4px 14px">${rows.map(r=>r.n?`<button class="mrow" data-act="gomonth" data-m="${r.i}"><span><b>${r.m}</b><br><span class="sm mute">${r.n} chantier${r.n>1?'s':''} · CA ${eur(r.t.ca)}</span></span><span style="text-align:right"><b class="${sgn(r.t.profit)}">${eur(r.t.profit)}</b><br><span class="sm mute">Marge ${pct(r.t.margin)}</span></span></button>`:`<div class="mrow mute"><span>${r.m}</span><span>—</span></div>`).join('')}</div>`}
+function monthChart(all){const d=MOIS.map((m,i)=>sum(all.filter(j=>jobMonth(j)===i)));
+const max=Math.max(1,...d.map(t=>Math.max(t.ca+t.billed,t.profit)));
+const W=340,H=160,pl=4,pb=18,top=14,ph=H-pb-top,gw=(W-pl*2)/12;
+const bars=d.map((t,i)=>{const x=pl+i*gw,hc=Math.max(0,(t.ca+t.billed)/max*ph),hp=Math.max(0,t.profit/max*ph);
+return `<rect x="${x+3}" y="${H-pb-hc}" width="${gw/2-3}" height="${hc}" rx="2" fill="var(--mute)" opacity=".35"/><rect x="${x+gw/2}" y="${H-pb-hp}" width="${gw/2-3}" height="${hp}" rx="2" fill="var(--acc)"/><text x="${x+gw/2}" y="${H-5}" text-anchor="middle" font-size="8.5" fill="var(--mute)">${MABR[i]}</text><rect x="${x}" y="0" width="${gw}" height="${H}" fill="transparent" data-act="gomonth" data-m="${i}" style="cursor:pointer"/>`}).join('');
+return `<h2>Graphique ${year}</h2><div class="card"><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Chiffre d'affaires et bénéfice par mois"><text x="${pl}" y="9" font-size="9" fill="var(--mute)">${eur(max)}</text><line x1="${pl}" x2="${W-pl}" y1="${H-pb}" y2="${H-pb}" stroke="var(--line)"/>${bars}</svg>
+<div class="sm mute" style="display:flex;gap:14px;margin-top:6px"><span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--mute);opacity:.35"></i> CA</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--acc)"></i> Bénéfice</span><span>Touchez un mois pour le détail</span></div></div>`}
+function dueCard(){const l=S.jobs.filter(j=>j.paid===false);if(!l.length)return'';const by={};let tot=0;
+l.forEach(j=>{const c=calc(j),d=c.ca+c.billed;tot+=d;by[j.clientId]=(by[j.clientId]||0)+d});
+return `<div class="card" style="border-left:6px solid var(--acc)"><div class="row"><b>À encaisser</b><b>${eur(tot)}</b></div><div class="sm mute">${l.length} chantier${l.length>1?'s':''} non payé${l.length>1?'s':''} (toutes années)</div>${Object.keys(by).map(id=>`<div class="row sm" style="margin-top:6px"><span>${esc(cname(id))}</span><b>${eur(by[id])}</b></div>`).join('')}<div class="btns"><button class="b ghost" data-act="showdue">Voir ces chantiers</button></div></div>`}
+function monthSel(){return `<select data-month style="width:auto;min-height:36px;padding:4px 10px">${MOIS.map((m,i)=>`<option value="${i}" ${i===month?'selected':''}>${m}</option>`).join('')}</select>`}
+function vBilan(){const all=yearJobs(),isM=mode==='month',js=isM?all.filter(j=>jobMonth(j)===month):all,t=sum(js);
+const title=isM?MOIS[month]+' '+year:'Année '+year;
+const by=S.clients.map(c=>{const l=js.filter(j=>j.clientId===c.id);return{c,n:l.length,t:sum(l)}}).filter(x=>x.n).sort((a,b)=>b.t.ca-a.t.ca);
+return backupWarn()+`<div class="seg"><button class="${isM?'':'on'}" data-act="mode" data-m="year">Par année</button><button class="${isM?'on':''}" data-act="mode" data-m="month">Par mois</button></div>
+<div class="row" style="margin:0 0 10px"><h2 style="margin:0">${title}</h2><div style="display:flex;gap:6px">${isM?monthSel():''}${yearSel()}</div></div>
+${hero(t,js.length)}${dueCard()}
+${isM?'':monthChart(all)+monthTable(all)}
+<h2>Bilan par client</h2>
+${by.length?by.map(x=>`<div class="card"><div class="row"><b>${esc(x.c.name)}</b><b class="${sgn(x.t.profit)}">${eur(x.t.profit)}</b></div>
+<div class="row sm mute" style="margin-top:4px"><span>${x.n} chantier${x.n>1?'s':''} · CA ${eur(x.t.ca)}</span><span>Marge ${pct(x.t.margin)}</span></div>
+<div class="sm mute" style="margin-top:2px">Bénéfice dont main-d'œuvre ${eur(x.t.labor)} · Dépenses ${eur(x.t.exp)}</div></div>`).join(''):'<div class="empty">Aucun chantier : '+title+'.</div>'}`}
+
+function jobsList(){const nd=norm(q.trim()),wide=nd||filt==='due';
+let l=wide?S.jobs.slice():yearJobs();
+if(filt==='due')l=l.filter(j=>j.paid===false);else if(filt==='paid')l=l.filter(j=>j.paid!==false);
+if(nd)l=l.filter(j=>norm(j.name).includes(nd)||norm(cname(j.clientId)).includes(nd));
+l.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+const scope=wide?'toutes années':year;
+return l.length?`<div class="sm mute" style="margin:0 2px 8px">${l.length} chantier${l.length>1?'s':''} · ${scope}</div>`+l.map(j=>{const c=calc(j);return `<button class="card item" data-act="editjob" data-id="${j.id}">
+<div class="row"><b>${esc(j.name)}${j.paid===false?' <span class="pill">À encaisser</span>':''}</b><b class="${sgn(c.profit)}">${eur(c.profit)}</b></div>
+<div class="row sm mute" style="margin-top:3px"><span>${esc(cname(j.clientId))} · ${j.date?new Date(j.date).toLocaleDateString('fr-FR'):''}</span><span>Marge ${pct(c.margin)}</span></div>
+<div class="sm mute">CA ${eur(c.ca)} · Dépenses ${eur(c.exp)}${c.billed?' · Refacturé '+eur(c.billed):''}</div><div class="sm mute">Bénéfice dont main-d'œuvre ${eur(c.labor)}</div></button>`}).join(''):`<div class="empty">Aucun chantier${nd?' pour « '+esc(q.trim())+' »':''} (${scope}).</div>`}
+function vJobs(){const n=S.jobs.filter(j=>j.paid===false).length;
+return `<div class="row" style="margin:8px 0 12px">${yearSel()}<button class="b acc" data-act="newjob">+ Nouveau chantier</button></div>
+<input data-q type="search" placeholder="Rechercher un chantier ou un client" value="${esc(q)}" style="margin-bottom:10px">
+<div class="seg" style="margin:0 0 12px">${[['all','Tous'],['due','À encaisser'+(n?' ('+n+')':'')],['paid','Payés']].map(([k,t])=>`<button class="${filt===k?'on':''}" data-act="filt" data-v="${k}">${t}</button>`).join('')}</div>
+<div id="jl">${jobsList()}</div>`}
+
+function vClients(){return `<div class="card"><label style="margin-top:0">Nouveau client</label>
+<input id="newc" placeholder="Nom du client" autocomplete="off"><div class="btns"><button class="b acc" data-act="addclient">Ajouter le client</button></div></div>
+${S.clients.length?S.clients.map(c=>{const n=S.jobs.filter(j=>j.clientId===c.id).length;
+return `<div class="card"><input data-cid="${c.id}" value="${esc(c.name)}" aria-label="Nom du client">
+<div class="row" style="margin-top:8px"><span class="sm mute">${n} chantier${n>1?'s':''}</span>
+${n?'<span class="sm mute">Supprimez ses chantiers pour le retirer</span>':`<button class="b danger" style="min-height:36px;padding:6px 12px" data-act="delclient" data-id="${c.id}">${armed==='c'+c.id?'Confirmer ?':'Supprimer'}</button>`}</div></div>`}).join(''):'<div class="empty">Aucun client pour l\'instant.</div>'}`}
+
+function vSet(){const lb=S.lastBackup?new Date(S.lastBackup).toLocaleString('fr-FR'):'jamais';
+return `<div class="card"><label style="margin-top:0">Votre taux horaire (€/h)</label>
+<input data-set="rate" inputmode="decimal" value="${S.rate||''}" placeholder="ex. 45">
+<div class="sm mute" style="margin-top:6px">Appliqué aux nouveaux chantiers. Chaque chantier garde son propre taux, modifiable. Les heures × taux sont comptées dans le bénéfice, pas comme une dépense.</div></div>
+<h2>Dépenses types</h2>
+<div class="card"><div class="sm mute" style="margin-bottom:8px">Dépenses fréquentes à ajouter en un tap dans un chantier (ex. déchèterie : coût 4 €, facturé 10 €).</div>
+${(S.presets||[]).map(p=>`<div class="expc"><div class="exp1"><input data-pid="${p.id}" data-pf="label" value="${esc(p.label)}" placeholder="Nom de la dépense"><button class="b ghost" data-act="delpreset" data-id="${p.id}" aria-label="Supprimer">✕</button></div><div class="exp2"><div><span class="sm mute">Coût réel (€)</span><input data-pid="${p.id}" data-pf="amount" inputmode="decimal" value="${esc(p.amount)}"></div><div><span class="sm mute">Facturé au client (€)</span><input data-pid="${p.id}" data-pf="billed" inputmode="decimal" value="${esc(p.billed)}"></div></div></div>`).join('')}
+<button class="b ghost" data-act="addpreset" style="width:100%">+ Ajouter une dépense type</button></div>
+<h2>Sauvegarde</h2>
+<div class="card"><div class="sm mute">Dernière sauvegarde : ${lb}</div>
+<div class="btns"><button class="b acc" data-act="file">Enregistrer dans Fichiers</button></div>
+<div class="sm mute" style="margin-top:6px">Recommandé : gardez le fichier dans iCloud Drive, à l'abri de l'application.</div>
+<div class="btns"><button class="b ghost" data-act="backup">Ou créer la sauvegarde en texte</button></div>
+<textarea id="bk" readonly placeholder="Le texte de sauvegarde apparaîtra ici." style="margin-top:10px">${esc(bkText)}</textarea>
+<div class="btns"><button class="b ghost" data-act="copy">Copier</button><button class="b ghost" data-act="share">Partager</button></div>
+<div class="sm mute" style="margin-top:8px">Collez-le dans Notes, ou envoyez-le-vous par mail ou message.</div></div>
+<h2>Restauration</h2>
+<div class="card"><button class="b ghost" data-act="pick" style="width:100%">Choisir un fichier de sauvegarde</button><input type="file" id="rf" accept=".json,application/json,text/plain" hidden><textarea id="rs" style="margin-top:10px" placeholder="Ou collez ici le texte de sauvegarde.">${esc(rsText)}</textarea>
+<div class="btns"><button class="b danger" data-act="restore">${armed==='restore'?'Confirmer : remplacer mes données':'Restaurer'}</button></div>
+<div class="sm mute" style="margin-top:8px">La restauration remplace toutes les données actuelles.</div></div>
+<h2>Copies automatiques</h2>
+<div class="card">${snaps().length?snaps().map((x,i)=>`<div class="row" style="margin-bottom:8px"><span>${new Date(x.t).toLocaleDateString('fr-FR')}</span><button class="b ghost" style="min-height:36px;padding:6px 12px" data-act="snap" data-i="${i}">${armed==='snap'+i?'Confirmer ?':'Revenir à cette copie'}</button></div>`).join(''):'<div class="sm mute">Aucune copie pour l\'instant.</div>'}
+<div class="sm mute">Une copie est faite chaque jour d'utilisation (les 8 dernières sont gardées). Elles protègent d'une fausse manipulation, mais pas d'une perte de l'application : pour cela, utilisez le fichier.</div></div>
+<div class="sm mute" style="margin:14px 4px">Les données sont enregistrées sur cet iPhone, dans cette application. Si vous videz les données de Safari, elles seront perdues : sauvegardez régulièrement.</div>`}
+
+function vSheet(){const d=editing,isNew=!S.jobs.some(j=>j.id===d.id);
+return `<div class="panel"><div class="row"><h1>${isNew?'Nouveau chantier':'Chantier'}</h1><button class="b ghost" style="min-height:36px;padding:6px 12px" data-act="close">Fermer</button></div>
+<label>Nom du chantier</label><input data-f="name" value="${esc(d.name)}" placeholder="ex. Rénovation salle de bain">
+<label>Client</label><select data-f="clientId">${S.clients.map(c=>`<option value="${c.id}" ${c.id===d.clientId?'selected':''}>${esc(c.name)}</option>`).join('')}</select>
+<label>Date</label><input type="date" data-f="date" value="${esc(d.date)}">
+<label>Paiement</label><div class="seg" style="margin:0"><button class="${d.paid===false?'on':''}" data-act="setpaid" data-v="0">À encaisser</button><button class="${d.paid===false?'':'on'}" data-act="setpaid" data-v="1">Payé</button></div>
+<label>Chiffre d'affaires (€), sans les dépenses refacturées</label><input data-f="ca" inputmode="decimal" value="${esc(d.ca)}">
+<label>Heures travaillées (comptées dans votre bénéfice)</label><input data-f="hours" inputmode="decimal" value="${esc(d.hours)}">
+<label>Taux horaire (€/h)</label><input data-f="rate" inputmode="decimal" value="${esc(d.rate)}">
+<label>Dépenses (coût réel et montant facturé)</label>
+${d.expenses.map((e,i)=>`<div class="expc"><div class="exp1"><input data-ei="${i}" data-ef="label" value="${esc(e.label)}" placeholder="Ex. déchèterie, matériaux…"><button class="b ghost" data-act="delexp" data-i="${i}" aria-label="Retirer">✕</button></div><div class="exp2"><div><span class="sm mute">Coût réel (€)</span><input data-ei="${i}" data-ef="amount" inputmode="decimal" value="${esc(e.amount)}" placeholder="0"></div><div><span class="sm mute">Facturé au client (€)</span><input data-ei="${i}" data-ef="billed" inputmode="decimal" value="${esc(e.billed)}" placeholder="0"></div></div></div>`).join('')}
+${(S.presets||[]).some(p=>p.label)?`<div class="sm mute">Ajout rapide :</div><div class="chips">${S.presets.filter(p=>p.label).map(p=>`<button class="chip" data-act="usepreset" data-id="${p.id}">+ ${esc(p.label)}</button>`).join('')}</div>`:''}
+<button class="b ghost" data-act="addexp" style="width:100%">+ Ajouter une dépense</button>
+<div class="card" id="sum" style="margin-top:14px"></div>
+<div class="btns"><button class="b acc" data-act="savejob">Enregistrer</button>
+${isNew?'':`<button class="b danger" data-act="deljob">${armed==='job'?'Confirmer ?':'Supprimer'}</button>`}</div></div>`}
+
+function refreshSum(){const el=document.getElementById('sum');if(!el||!editing)return;const c=calc(editing);
+el.innerHTML=`<div class="row"><span>Dépenses (coût réel)</span><b>${eur(c.exp)}</b></div>${c.billed?`<div class="row"><span>Dépenses refacturées</span><b>${eur(c.billed)}</b></div>`:''}
+<div class="row" style="margin-top:6px"><span>Bénéfice (main-d'œuvre incluse)</span><b class="${sgn(c.profit)}">${eur(c.profit)}</b></div>
+<div class="row sm mute" style="padding-left:12px"><span>dont main-d'œuvre (${hh(num(editing.hours))})</span><b>${eur(c.labor)}</b></div>
+<div class="row" style="margin-top:6px"><span>Marge</span><b class="${sgn(c.profit)}">${pct(c.margin)}</b></div>`}
+
+function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+document.getElementById('app').innerHTML=({bilan:vBilan,jobs:vJobs,clients:vClients,set:vSet})[tab]();
+const sh=document.getElementById('sheet'),pn=sh.querySelector('.panel'),st=pn?pn.scrollTop:0;sh.hidden=!editing;sh.innerHTML=editing?vSheet():'';const np=sh.querySelector('.panel');if(np&&pn)np.scrollTop=st;refreshSum()}
+
+function openJob(j){editing=JSON.parse(JSON.stringify(j));armed=null;render()}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){try{const ta=document.getElementById('bk');ta.removeAttribute('readonly');ta.select();ta.setSelectionRange(0,99999);const ok=document.execCommand('copy');ta.setAttribute('readonly','');return ok}catch(_){return false}}}
+
+document.addEventListener('click',async e=>{
+const tb=e.target.closest('[data-tab]');if(tb&&tb.classList.contains('tab')){tab=tb.dataset.tab;armed=null;render();window.scrollTo(0,0);return}
+const a=e.target.closest('[data-act]');if(!a)return;const act=a.dataset.act,id=a.dataset.id;
+const guard=k=>{if(armed!==k){armed=k;render();return false}armed=null;return true};
+if(act!=='delclient'&&act!=='deljob'&&act!=='restore'&&act!=='snap')armed=null;
+if(act==='newjob'){if(!S.clients.length){tab='clients';render();toast('Ajoutez d\'abord un client');return}
+openJob({id:uid(),name:'',clientId:S.clients[0].id,date:today(),ca:'',hours:'',rate:S.rate||'',paid:false,expenses:[]})}
+else if(act==='editjob'){openJob(S.jobs.find(j=>j.id===id))}
+else if(act==='filt'){filt=a.dataset.v;render()}
+else if(act==='showdue'){tab='jobs';filt='due';q='';render();window.scrollTo(0,0)}
+else if(act==='setpaid'){editing.paid=a.dataset.v==='1';render()}
+else if(act==='usepreset'){const pr=(S.presets||[]).find(x=>x.id===id);if(pr){editing.expenses.push({label:pr.label,amount:pr.amount,billed:pr.billed});render()}}
+else if(act==='addpreset'){(S.presets=S.presets||[]).push({id:uid(),label:'',amount:'',billed:''});save();render()}
+else if(act==='delpreset'){S.presets=(S.presets||[]).filter(x=>x.id!==id);save();render()}
+else if(act==='mode'){mode=a.dataset.m;render()}
+else if(act==='gomonth'){month=+a.dataset.m;mode='month';render();window.scrollTo(0,0)}
+else if(act==='close'){editing=null;render()}
+else if(act==='addexp'){editing.expenses.push({label:'',amount:'',billed:''});render()}
+else if(act==='delexp'){editing.expenses.splice(+a.dataset.i,1);render()}
+else if(act==='savejob'){if(!editing.name.trim()){toast('Donnez un nom au chantier');return}
+const i=S.jobs.findIndex(j=>j.id===editing.id);if(i>=0)S.jobs[i]=editing;else S.jobs.push(editing);
+const y=+(editing.date||'').slice(0,4);if(y)year=y;save();editing=null;render();toast('Chantier enregistré')}
+else if(act==='deljob'){if(guard('job')){S.jobs=S.jobs.filter(j=>j.id!==editing.id);save();editing=null;render();toast('Chantier supprimé')}}
+else if(act==='addclient'){const v=document.getElementById('newc').value.trim();if(!v){toast('Saisissez un nom');return}
+S.clients.push({id:uid(),name:v});save();render();toast('Client ajouté')}
+else if(act==='delclient'){if(guard('c'+id)){S.clients=S.clients.filter(c=>c.id!==id);save();render();toast('Client supprimé')}}
+else if(act==='file'){await saveFile()}
+else if(act==='pick'){document.getElementById('rf').click()}
+else if(act==='snap'){const i=+a.dataset.i;if(guard('snap'+i)){const l=snaps(),x=l[i];if(x){l.unshift({d:'avant',t:Date.now(),data:JSON.stringify(S)});try{localStorage.setItem(SNAPK,JSON.stringify(l.slice(0,9)))}catch(_){}S=migrate(JSON.parse(x.data));save();render();toast('Copie du '+new Date(x.t).toLocaleDateString('fr-FR')+' restaurée')}}}
+else if(act==='backup'){bkText=makeBackup();render();toast('Sauvegarde créée : copiez-la')}
+else if(act==='copy'){if(!bkText){toast('Créez d\'abord la sauvegarde');return}toast(await copyText(bkText)?'Copié':'Copie impossible : sélectionnez le texte')}
+else if(act==='share'){if(!bkText){toast('Créez d\'abord la sauvegarde');return}
+if(navigator.share){try{await navigator.share({title:'Sauvegarde Compta chantiers',text:bkText})}catch(_){}}else toast(await copyText(bkText)?'Partage indisponible : texte copié':'Partage indisponible')}
+else if(act==='restore'){const el=document.getElementById('rs');rsText=el?el.value:rsText;
+if(!rsText.trim()){toast('Collez d\'abord la sauvegarde');return}
+let d;try{const o=JSON.parse(rsText.trim());d=o.data||o}catch(_){toast('Texte invalide');return}
+if(!Array.isArray(d.jobs)||!Array.isArray(d.clients)){toast('Ce n\'est pas une sauvegarde valide');return}
+if(guard('restore')){S=migrate(d);save();rsText='';render();toast('Données restaurées')}}
+});
+
+document.addEventListener('input',e=>{const t=e.target;
+if(t.id==='rs'){rsText=t.value;return}
+if(t.dataset.q!==undefined){q=t.value;const jl=document.getElementById('jl');if(jl)jl.innerHTML=jobsList();return}
+if(!editing)return;
+if(t.dataset.f)editing[t.dataset.f]=t.value;
+else if(t.dataset.ei!==undefined)editing.expenses[+t.dataset.ei][t.dataset.ef]=t.value;
+refreshSum()});
+
+document.addEventListener('change',e=>{const t=e.target;
+if(t.dataset.year!==undefined){year=+t.value;render()}
+else if(t.dataset.month!==undefined){month=+t.value;render()}
+else if(t.dataset.pid){const pr=(S.presets||[]).find(x=>x.id===t.dataset.pid);if(pr){pr[t.dataset.pf]=t.value;save()}}
+else if(t.dataset.cid){const c=S.clients.find(c=>c.id===t.dataset.cid);if(c&&t.value.trim()){c.name=t.value.trim();save();toast('Nom modifié')}}
+else if(t.dataset.set==='rate'){S.rate=num(t.value);save();toast('Taux enregistré')}
+else if(t.id==='rf'){const f=t.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{rsText=String(r.result);tab='set';render();toast('Fichier chargé : touchez Restaurer')};r.readAsText(f)}});
+
+load();render();recover();
+</script>
+</body>
+</html>
